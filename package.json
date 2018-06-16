@@ -1,0 +1,29 @@
+{
+  "name": "sample-statistics",
+  "version": "1.0.0",
+  "description": "Just a sample.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "tsc && node ./dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yesterday17/sample-statistics.git"
+  },
+  "author": "Yesterday17",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yesterday17/sample-statistics/issues"
+  },
+  "homepage": "https://github.com/Yesterday17/sample-statistics#readme",
+  "devDependencies": {
+    "ts-node": "^6.1.1",
+    "typescript": "^2.9.2"
+  },
+  "dependencies": {
+    "@types/koa": "^2.0.46",
+    "@types/koa-router": "^7.0.28",
+    "koa": "^2.5.1",
+    "koa-router": "^7.4.0"
+  }
+}
