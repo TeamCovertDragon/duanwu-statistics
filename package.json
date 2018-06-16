@@ -21,9 +21,11 @@
     "typescript": "^2.9.2"
   },
   "dependencies": {
+    "@types/formidable": "^1.0.31",
     "@types/koa": "^2.0.46",
     "@types/koa-router": "^7.0.28",
     "koa": "^2.5.1",
+    "koa-body": "^4.0.3",
     "koa-router": "^7.4.0"
   }
 }

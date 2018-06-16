@@ -1,5 +1,6 @@
 import * as Koa from "koa";
 import * as Router from "koa-router";
+import * as Koabody from "koa-body";
 
 const app = new Koa();
 const router = new Router();
@@ -16,10 +17,20 @@ router.get("/", async (ctx, next) => {
 });
 
 router.post("/", async (ctx, next) => {
-  console.log(`POST: ${JSON.stringify(ctx.request.query)}`);
+  console.log(
+    `POST: ${JSON.stringify(
+      ctx.request.query === {} ? ctx.request.query : ctx.request.body
+    )}`
+  );
 
   try {
-    let element: string = ctx.request.query.flavor;
+    let element: string = (function() {
+      if (typeof ctx.request.query.flavor === "undefined") {
+        return ctx.request.body.flavor;
+      }
+      return ctx.request.query.flavor;
+    })();
+
     flavor[element]++;
 
     ctx.response.status = 200;
@@ -40,4 +51,5 @@ router.post("/", async (ctx, next) => {
   }
 });
 
+app.use(Koabody());
 app.use(router.routes()).listen(8080);
