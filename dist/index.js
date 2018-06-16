@@ -11,7 +11,7 @@ let flavor = {
 };
 router.get("/", async (ctx, next) => {
     ctx.body = "Hello World!";
-    console.log(`GET: ${ctx.request.query}`);
+    console.log(`GET: ${JSON.stringify(ctx.request.query)}`);
 });
 router.post("/", async (ctx, next) => {
     console.log(`POST: ${JSON.stringify(ctx.request.query)}`);
