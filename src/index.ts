@@ -9,16 +9,18 @@ const router = new Router();
 
 let flavor: any;
 
-try {
-  flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
-} catch (e) {
-  console.error("Can't read file ./config.json!");
-  console.error(e.message);
-  flavor = {
-    sweet: 0,
-    salty: 0,
-    spicy: 0
-  };
+function loadConfig() {
+  try {
+    flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+  } catch (e) {
+    console.error("Can't read file ./config.json!");
+    console.error(e.message);
+    flavor = {
+      sweet: 0,
+      salty: 0,
+      spicy: 0
+    };
+  }
 }
 
 router.get("/index.html", async (ctx, next) => {
@@ -52,7 +54,11 @@ router.post("/", async (ctx, next) => {
       return ctx.request.query.flavor;
     })();
 
-    flavor[element]++;
+    loadConfig();
+
+    if (/sweet/g.test(element)) flavor["sweet"]++;
+    if (/salty/g.test(element)) flavor["salty"]++;
+    if (/spicy/g.test(element)) flavor["spicy"]++;
 
     ctx.response.status = 200;
     ctx.body = JSON.stringify({
@@ -74,5 +80,6 @@ router.post("/", async (ctx, next) => {
   }
 });
 
+loadConfig();
 app.use(Koabody());
 app.use(router.routes()).listen(8080);

@@ -8,17 +8,19 @@ const fs = require("fs");
 const app = new Koa();
 const router = new Router();
 let flavor;
-try {
-    flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
-}
-catch (e) {
-    console.error("Can't read file ./config.json!");
-    console.error(e.message);
-    flavor = {
-        sweet: 0,
-        salty: 0,
-        spicy: 0
-    };
+function loadConfig() {
+    try {
+        flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+    }
+    catch (e) {
+        console.error("Can't read file ./config.json!");
+        console.error(e.message);
+        flavor = {
+            sweet: 0,
+            salty: 0,
+            spicy: 0
+        };
+    }
 }
 router.get("/index.html", async (ctx, next) => {
     await send(ctx, ctx.path, { root: "./public" });
@@ -41,7 +43,13 @@ router.post("/", async (ctx, next) => {
             }
             return ctx.request.query.flavor;
         })();
-        flavor[element]++;
+        loadConfig();
+        if (/sweet/g.test(element))
+            flavor["sweet"]++;
+        if (/salty/g.test(element))
+            flavor["salty"]++;
+        if (/spicy/g.test(element))
+            flavor["spicy"]++;
         ctx.response.status = 200;
         ctx.body = JSON.stringify({
             statistics: Object.assign({}, flavor),
@@ -59,6 +67,7 @@ router.post("/", async (ctx, next) => {
         fs.writeFileSync("./config.json", JSON.stringify(flavor, null, 2), "utf-8");
     }
 });
+loadConfig();
 app.use(Koabody());
 app.use(router.routes()).listen(8080);
 //# sourceMappingURL=index.js.map
