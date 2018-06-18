@@ -2,15 +2,24 @@ import * as Koa from "koa";
 import * as Router from "koa-router";
 import * as Koabody from "koa-body";
 import * as send from "koa-send";
+import * as fs from "fs";
 
 const app = new Koa();
 const router = new Router();
 
-let flavor: any = {
-  sweet: 0,
-  salty: 0,
-  spicy: 0
-};
+let flavor: any;
+
+try {
+  flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+} catch (e) {
+  console.error("Can't read file ./config.json!");
+  console.error(e.message);
+  flavor = {
+    sweet: 0,
+    salty: 0,
+    spicy: 0
+  };
+}
 
 router.get("/index.html", async (ctx, next) => {
   await send(ctx, ctx.path, { root: "./public" });
@@ -60,6 +69,8 @@ router.post("/", async (ctx, next) => {
       null,
       2
     );
+  } finally {
+    fs.writeFileSync("./config.json", JSON.stringify(flavor, null, 2), "utf-8");
   }
 });
 

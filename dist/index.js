@@ -4,13 +4,22 @@ const Koa = require("koa");
 const Router = require("koa-router");
 const Koabody = require("koa-body");
 const send = require("koa-send");
+const fs = require("fs");
 const app = new Koa();
 const router = new Router();
-let flavor = {
-    sweet: 0,
-    salty: 0,
-    spicy: 0
-};
+let flavor;
+try {
+    flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+}
+catch (e) {
+    console.error("Can't read file ./config.json!");
+    console.error(e.message);
+    flavor = {
+        sweet: 0,
+        salty: 0,
+        spicy: 0
+    };
+}
 router.get("/index.html", async (ctx, next) => {
     await send(ctx, ctx.path, { root: "./public" });
 });
@@ -45,6 +54,10 @@ router.post("/", async (ctx, next) => {
             message: e.message,
             code: 400
         }, null, 2);
+    }
+    finally {
+        // TODO: Save here
+        fs.writeFileSync("./config.json", JSON.stringify(flavor, null, 2), "utf-8");
     }
 });
 app.use(Koabody());
