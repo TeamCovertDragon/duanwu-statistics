@@ -77,38 +77,35 @@
     <script src="./js/bootstrap.min.js"></script>
 
     <script>
-        function handle(data) {
-            var lang = window.navigator.language;
-            data = JSON.parse(data);
-            var total = data.sweet + data.salty + data.spicy;
-            var sweet = 0, salty = 0, spicy = 0;
-            if (total !== 0) {
-                sweet = Math.floor(data.sweet / total * 100);
-                salty = Math.floor(data.salty / total * 100);
-                spicy = Math.floor(data.spicy / total * 100);
-            }
-
-            $(".sweet").attr("aria-valuenow", sweet).css('width', sweet + '%').text(sweet + '%');
-            $(".salty").attr("aria-valuenow", salty).css('width', salty + '%').text(salty + '%');
-            $(".spicy").attr("aria-valuenow", spicy).css('width', spicy + '%').text(spicy + '%');
-
-            if (lang === "zh-CN") {
-                $(".statistics-sweet").text("甜党：" + data.sweet + "人");
-                $(".statistics-salty").text("咸党：" + data.salty + "人");
-                $(".statistics-spicy").text("辣党：" + data.spicy + "人");
-            }
-            else {
-                $(".title").text("Sweet vs salty vs spicy!");
-                $("title").text("Sweet vs salty vs spicy!");
-                $(".statistics-sweet").text("Sweet: " + data.sweet);
-                $(".statistics-salty").text("Salty: " + data.salty);
-                $(".statistics-spicy").text("Spicy: " + data.spicy);
-            }
-        }
         function refresh() {
             $.ajax("http://localhost:8080/result")
                 .done(function (data) {
-                    handle(data);
+                    var lang = window.navigator.language;
+                    data = JSON.parse(data);
+                    var total = data.sweet + data.salty + data.spicy;
+                    var sweet = 0, salty = 0, spicy = 0;
+                    if (total !== 0) {
+                        sweet = Math.floor(data.sweet / total * 100);
+                        salty = Math.floor(data.salty / total * 100);
+                        spicy = Math.floor(data.spicy / total * 100);
+                    }
+
+                    $(".sweet").attr("aria-valuenow", sweet).css('width', sweet + '%').text(sweet + '%');
+                    $(".salty").attr("aria-valuenow", salty).css('width', salty + '%').text(salty + '%');
+                    $(".spicy").attr("aria-valuenow", spicy).css('width', spicy + '%').text(spicy + '%');
+
+                    if (lang === "zh-CN") {
+                        $(".statistics-sweet").text("甜党：" + data.sweet + "人");
+                        $(".statistics-salty").text("咸党：" + data.salty + "人");
+                        $(".statistics-spicy").text("辣党：" + data.spicy + "人");
+                    }
+                    else {
+                        $(".title").text("Sweet vs salty vs spicy!");
+                        $("title").text("Sweet vs salty vs spicy!");
+                        $(".statistics-sweet").text("Sweet: " + data.sweet);
+                        $(".statistics-salty").text("Salty: " + data.salty);
+                        $(".statistics-spicy").text("Spicy: " + data.spicy);
+                    }
                 })
         }
         $(document).ready(function () {
