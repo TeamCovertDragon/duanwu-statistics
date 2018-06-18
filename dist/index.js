@@ -70,8 +70,8 @@ router.post("/", async (ctx, next) => {
 });
 loadConfig();
 app.use(limit({
-    duration: 60000,
-    max: 10,
+    duration: 5000,
+    max: 2,
     accessLimited: JSON.stringify({
         message: "429: Too Many Requests.",
         code: 429
