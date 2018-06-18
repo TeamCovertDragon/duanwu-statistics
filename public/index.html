@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="./css/bootstrap.min.css">
-    <title>Sweet vs salty vs spicy!</title>
+    <title>甜咸辣之争</title>
     <style>
         .center {
             display: -webkit-flex;
@@ -17,22 +17,37 @@
 
         .category {
             margin-bottom: 15px;
+            width: 100%;
         }
 
         .progress {
             margin-top: 5px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .box {
+            min-width: 500px;
+            max-width: 500px;
+            display: -webkit-flex;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </header>
 
 <body style="height: 100%;">
     <div class="center">
-        <div class="shadow p-3 mb-5 bg-white rounded">
-            <h3 class="text-justify text-success">　　　　　　　Sweet vs salty vs spicy!　　　　　　　</h3>
-            <br />
+        <div class="shadow p-3 mb-5 bg-white rounded box">
+            <h3 class="text-justify text-success title">甜咸辣之争</h3>
+            <button type="button" class="btn btn-outline-success btn-sm refresh">刷新</button>
             <div class="category">
                 <div class="statistics-sweet">
-                    Sweet:
+                    甜党：
                 </div>
                 <div class="progress">
                     <div class="progress-bar sweet" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -40,7 +55,7 @@
             </div>
             <div class="category">
                 <div class="statistics-salty">
-                    Salty:
+                    咸党：
                 </div>
                 <div class="progress">
                     <div class="progress-bar salty" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -48,7 +63,7 @@
             </div>
             <div class="category">
                 <div class="statistics-spicy">
-                    Spicy:
+                    辣党：
                 </div>
                 <div class="progress">
                     <div class="progress-bar spicy" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -62,27 +77,45 @@
     <script src="./js/bootstrap.min.js"></script>
 
     <script>
-        $(document).ready(function () {
+        function handle(data) {
+            var lang = window.navigator.language;
+            data = JSON.parse(data);
+            var total = data.sweet + data.salty + data.spicy;
+            var sweet = 0, salty = 0, spicy = 0;
+            if (total !== 0) {
+                sweet = Math.floor(data.sweet / total * 100);
+                salty = Math.floor(data.salty / total * 100);
+                spicy = Math.floor(data.spicy / total * 100);
+            }
+
+            $(".sweet").attr("aria-valuenow", sweet).css('width', sweet + '%').text(sweet + '%');
+            $(".salty").attr("aria-valuenow", salty).css('width', salty + '%').text(salty + '%');
+            $(".spicy").attr("aria-valuenow", spicy).css('width', spicy + '%').text(spicy + '%');
+
+            if (lang === "zh-CN") {
+                $(".statistics-sweet").text("甜党：" + data.sweet + "人");
+                $(".statistics-salty").text("咸党：" + data.salty + "人");
+                $(".statistics-spicy").text("辣党：" + data.spicy + "人");
+            }
+            else {
+                $(".title").text("Sweet vs salty vs spicy!");
+                $("title").text("Sweet vs salty vs spicy!");
+                $(".statistics-sweet").text("Sweet: " + data.sweet);
+                $(".statistics-salty").text("Salty: " + data.salty);
+                $(".statistics-spicy").text("Spicy: " + data.spicy);
+            }
+        }
+        function refresh() {
             $.ajax("http://localhost:8080/result")
                 .done(function (data) {
-                    data = JSON.parse(data);
-                    var total = data.sweet + data.salty + data.spicy;
-                    var sweet = 0, salty = 0, spicy = 0;
-                    if (total !== 0) {
-                        sweet = Math.floor(data.sweet / total * 100);
-                        salty = Math.floor(data.salty / total * 100);
-                        spicy = Math.floor(data.spicy / total * 100);
-                    }
-
-                    $(".sweet").attr("aria-valuenow", sweet).css('width', sweet + '%').text(sweet + '%');
-                    $(".salty").attr("aria-valuenow", salty).css('width', salty + '%').text(salty + '%');
-                    $(".spicy").attr("aria-valuenow", spicy).css('width', spicy + '%').text(spicy + '%');
-
-                    $(".statistics-sweet").text("Sweet: " + data.sweet);
-                    $(".statistics-salty").text("Salty: " + data.salty);
-                    $(".statistics-spicy").text("Spicy: " + data.spicy);
+                    handle(data);
                 })
-        })
+        }
+        $(document).ready(function () {
+            refresh();
+        });
+
+        $(".refresh").on("click", refresh);
     </script>
 </body>
 
