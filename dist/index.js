@@ -11,11 +11,17 @@ let flavor = {
     salty: 0,
     spicy: 0
 };
-router.get("/:addr", async (ctx, next) => {
+router.get("/index.html", async (ctx, next) => {
+    await send(ctx, ctx.path, { root: "./public" });
+});
+router.get("/:addr/:file", async (ctx, next) => {
     await send(ctx, ctx.path, { root: "./public" });
 });
 router.get("/", async (ctx, next) => {
     await send(ctx, "./public/index.html");
+});
+router.get("/result", async (ctx, next) => {
+    ctx.body = JSON.stringify(flavor, null, 2);
 });
 router.post("/", async (ctx, next) => {
     console.log(`POST: ${JSON.stringify(ctx.request.query === {} ? ctx.request.query : ctx.request.body)}`);
