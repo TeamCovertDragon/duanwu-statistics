@@ -1,6 +1,7 @@
 import * as Koa from "koa";
 import * as Router from "koa-router";
 import * as Koabody from "koa-body";
+import * as send from "koa-send";
 
 const app = new Koa();
 const router = new Router();
@@ -11,9 +12,12 @@ let flavor: any = {
   spicy: 0
 };
 
+router.get("/:addr", async (ctx, next) => {
+  await send(ctx, ctx.path, { root: "./public" });
+});
+
 router.get("/", async (ctx, next) => {
-  ctx.body = "Hello World!";
-  console.log(`GET: ${JSON.stringify(ctx.request.query)}`);
+  await send(ctx, "./public/index.html");
 });
 
 router.post("/", async (ctx, next) => {

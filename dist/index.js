@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Koa = require("koa");
 const Router = require("koa-router");
 const Koabody = require("koa-body");
+const send = require("koa-send");
 const app = new Koa();
 const router = new Router();
 let flavor = {
@@ -10,9 +11,11 @@ let flavor = {
     salty: 0,
     spicy: 0
 };
+router.get("/:addr", async (ctx, next) => {
+    await send(ctx, ctx.path, { root: "./public" });
+});
 router.get("/", async (ctx, next) => {
-    ctx.body = "Hello World!";
-    console.log(`GET: ${JSON.stringify(ctx.request.query)}`);
+    await send(ctx, "./public/index.html");
 });
 router.post("/", async (ctx, next) => {
     console.log(`POST: ${JSON.stringify(ctx.request.query === {} ? ctx.request.query : ctx.request.body)}`);
