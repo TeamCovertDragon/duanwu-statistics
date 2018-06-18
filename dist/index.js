@@ -56,7 +56,6 @@ router.post("/", async (ctx, next) => {
         }, null, 2);
     }
     finally {
-        // TODO: Save here
         fs.writeFileSync("./config.json", JSON.stringify(flavor, null, 2), "utf-8");
     }
 });
