@@ -43,7 +43,7 @@ router.post("/", async (ctx, next) => {
   console.log(
     `POST: ${JSON.stringify(
       ctx.request.query === {} ? ctx.request.query : ctx.request.body
-    )}`
+    )} from ${ctx.ip}`
   );
 
   try {
