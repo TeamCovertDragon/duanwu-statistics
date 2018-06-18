@@ -3,6 +3,7 @@ import * as Router from "koa-router";
 import * as Koabody from "koa-body";
 import * as send from "koa-send";
 import * as fs from "fs";
+const limit = require("koa-better-ratelimit");
 
 const app = new Koa();
 const router = new Router();
@@ -43,7 +44,7 @@ router.post("/", async (ctx, next) => {
   console.log(
     `POST: ${JSON.stringify(
       ctx.request.query === {} ? ctx.request.query : ctx.request.body
-    )} from ${ctx.ip}`
+    )} from ${ctx.request.ip}`
   );
 
   try {
@@ -81,5 +82,19 @@ router.post("/", async (ctx, next) => {
 });
 
 loadConfig();
+app.use(
+  limit({
+    duration: 60000,
+    max: 10,
+    accessLimited: JSON.stringify(
+      {
+        message: "429: Too Many Requests.",
+        code: 429
+      },
+      null,
+      2
+    )
+  })
+);
 app.use(Koabody());
 app.use(router.routes()).listen(8080);
