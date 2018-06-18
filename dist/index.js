@@ -36,7 +36,7 @@ router.get("/result", async (ctx, next) => {
     ctx.body = JSON.stringify(flavor, null, 2);
 });
 router.post("/", async (ctx, next) => {
-    console.log(`POST: ${JSON.stringify(ctx.request.query === {} ? ctx.request.query : ctx.request.body)}`);
+    console.log(`POST: ${JSON.stringify(ctx.request.query === {} ? ctx.request.query : ctx.request.body)} from ${ctx.request.ip}`);
     try {
         let element = (function () {
             if (typeof ctx.request.query.flavor === "undefined") {
