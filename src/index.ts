@@ -8,7 +8,6 @@ const app = new Koa();
 const router = new Router();
 
 let flavor: any;
-let ips: Array<string>;
 
 function loadConfig() {
   try {
@@ -21,15 +20,6 @@ function loadConfig() {
       salty: 0,
       spicy: 0
     };
-  }
-}
-
-function loadIps() {
-  try {
-    ips = JSON.parse(fs.readFileSync("./ips.json","utf-8"));
-  } catch (e) {
-    console.log(e);
-    ips = new Array();
   }
 }
 
@@ -53,16 +43,8 @@ router.post("/", async (ctx, next) => {
   console.log(
     `POST: ${JSON.stringify(
       ctx.request.query === {} ? ctx.request.query : ctx.request.body
-    )} from ${ctx.request.ip}`
+    )} from ${ctx.ip}`
   );
-  
-  loadIps();
-  if (ipExist(ctx.request.ip)) {
-    ctx.response.status = 200;
-    ctx.response.body = 'FAILED';
-    return;
-  }
-  fs.writeFileSync("./ips.json", JSON.stringify(ips), "utf-8");
 
   try {
     let element: string = (function() {
@@ -79,7 +61,10 @@ router.post("/", async (ctx, next) => {
     if (/spicy/g.test(element)) flavor["spicy"]++;
 
     ctx.response.status = 200;
-    ctx.body = 'SUCCESS';
+    ctx.body = JSON.stringify({
+      statistics: { ...flavor },
+      code: 200
+    });
   } catch (e) {
     ctx.response.status = 400;
     ctx.body = JSON.stringify(
@@ -95,16 +80,6 @@ router.post("/", async (ctx, next) => {
   }
 });
 
-function ipExist(ip: string) {
-  if (ips.indexOf(ip) == -1) {
-    ips.push(ip);
-    return false;
-  } else {
-    return true;
-  }
-}
-
-loadIps();
 loadConfig();
 app.use(Koabody());
 app.use(router.routes()).listen(8080);
