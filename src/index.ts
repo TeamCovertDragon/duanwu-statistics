@@ -3,12 +3,11 @@ import * as Router from "koa-router";
 import * as Koabody from "koa-body";
 import * as send from "koa-send";
 import * as fs from "fs";
-const limit = require("koa-better-ratelimit");
 
 const app = new Koa();
 const router = new Router();
 
-let flavor: any;
+let flavor: any, whiteList: any, visitList: any;
 
 function loadConfig() {
   try {
@@ -22,6 +21,39 @@ function loadConfig() {
       spicy: 0
     };
   }
+}
+
+function loadIPDefense() {
+  try {
+    whiteList = JSON.parse(fs.readFileSync("./whitelist.json", "utf-8"));
+  } catch (e) {
+    console.error(e.message);
+    whiteList = {};
+    fs.writeFileSync(
+      "./whiteList.json",
+      JSON.stringify(whiteList, null, 2),
+      "utf-8"
+    );
+  }
+  try {
+    visitList = JSON.parse(fs.readFileSync("./visitList.json", "utf-8"));
+  } catch (e) {
+    console.error(e.message);
+    visitList = {};
+    fs.writeFileSync(
+      "./visitList.json",
+      JSON.stringify(visitList, null, 2),
+      "utf-8"
+    );
+  }
+}
+
+function saveVisitList() {
+  fs.writeFileSync(
+    "./visitList.json",
+    JSON.stringify(visitList, null, 2),
+    "utf-8"
+  );
 }
 
 router.get("/index.html", async (ctx, next) => {
@@ -47,6 +79,30 @@ router.post("/", async (ctx, next) => {
     )} from ${ctx.request.ip}`
   );
 
+  loadIPDefense();
+
+  if (
+    whiteList[ctx.request.ip] === undefined &&
+    visitList[ctx.request.ip] !== undefined
+  ) {
+    if (Date.now() - visitList[ctx.request.ip] <= 2000) {
+      ctx.response.status = 429;
+      ctx.body = JSON.stringify(
+        {
+          message: "429: Too Many Requests.",
+          code: 429
+        },
+        null,
+        2
+      );
+      return;
+    }
+
+    delete visitList[ctx.request.ip];
+    saveVisitList();
+  }
+
+  // else
   try {
     let element: string = (function() {
       if (typeof ctx.request.query.flavor === "undefined") {
@@ -60,6 +116,12 @@ router.post("/", async (ctx, next) => {
     if (/sweet/g.test(element)) flavor["sweet"]++;
     if (/salty/g.test(element)) flavor["salty"]++;
     if (/spicy/g.test(element)) flavor["spicy"]++;
+
+    // record visit
+    if (whiteList[ctx.request.ip] === undefined) {
+      visitList[ctx.request.ip] = Date.now();
+      saveVisitList();
+    }
 
     ctx.response.status = 200;
     ctx.body = JSON.stringify({
@@ -82,19 +144,5 @@ router.post("/", async (ctx, next) => {
 });
 
 loadConfig();
-app.use(
-  limit({
-    duration: 5000,
-    max: 2,
-    accessLimited: JSON.stringify(
-      {
-        message: "429: Too Many Requests.",
-        code: 429
-      },
-      null,
-      2
-    )
-  })
-);
 app.use(Koabody());
 app.use(router.routes()).listen(8080);

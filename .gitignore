@@ -62,4 +62,8 @@ typings/
 
 # config file
 config.json
+visitList.json
+whiteList.json
+
+# vscode
 .vscode/settings.json
