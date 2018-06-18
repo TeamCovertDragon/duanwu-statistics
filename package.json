@@ -26,6 +26,7 @@
     "@types/koa-router": "^7.0.28",
     "@types/koa-send": "^4.1.1",
     "koa": "^2.5.1",
+    "koa-better-ratelimit": "^2.1.2",
     "koa-body": "^4.0.3",
     "koa-router": "^7.4.0",
     "koa-send": "^4.1.3"

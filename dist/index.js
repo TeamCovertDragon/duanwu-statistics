@@ -5,6 +5,7 @@ const Router = require("koa-router");
 const Koabody = require("koa-body");
 const send = require("koa-send");
 const fs = require("fs");
+const limit = require("koa-better-ratelimit");
 const app = new Koa();
 const router = new Router();
 let flavor;
@@ -68,6 +69,14 @@ router.post("/", async (ctx, next) => {
     }
 });
 loadConfig();
+app.use(limit({
+    duration: 60000,
+    max: 10,
+    accessLimited: JSON.stringify({
+        message: "429: Too Many Requests.",
+        code: 429
+    }, null, 2)
+}));
 app.use(Koabody());
 app.use(router.routes()).listen(8080);
 //# sourceMappingURL=index.js.map
