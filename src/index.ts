@@ -25,7 +25,7 @@ function loadConfig() {
 
 function loadIPDefense() {
   try {
-    whiteList = JSON.parse(fs.readFileSync("./whitelist.json", "utf-8"));
+    whiteList = JSON.parse(fs.readFileSync("./whiteList.json", "utf-8"));
   } catch (e) {
     console.error(e.message);
     whiteList = {};
