@@ -78,7 +78,7 @@
 
     <script>
         function refresh() {
-            $.ajax("http://duanwu.tritusk.info/result")
+            $.ajax("result")
                 .done(function (data) {
                     var lang = window.navigator.language;
                     data = JSON.parse(data);
