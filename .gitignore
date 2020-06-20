@@ -61,9 +61,7 @@ typings/
 .next
 
 # config file
-config.json
-visitList.json
-whiteList.json
+config/
 
 # vscode
 .vscode/settings.json

@@ -11,7 +11,7 @@ let flavor: any, whiteList: any, visitList: any;
 
 function loadConfig() {
   try {
-    flavor = JSON.parse(fs.readFileSync("./config.json", "utf-8"));
+    flavor = JSON.parse(fs.readFileSync("./config/config.json", "utf-8"));
   } catch (e) {
     console.error("Can't read file ./config.json!");
     console.error(e.message);
@@ -25,23 +25,23 @@ function loadConfig() {
 
 function loadIPDefense() {
   try {
-    whiteList = JSON.parse(fs.readFileSync("./whiteList.json", "utf-8"));
+    whiteList = JSON.parse(fs.readFileSync("./config/whiteList.json", "utf-8"));
   } catch (e) {
     console.error(e.message);
     whiteList = {};
     fs.writeFileSync(
-      "./whiteList.json",
+      "./config/whiteList.json",
       JSON.stringify(whiteList, null, 2),
       "utf-8"
     );
   }
   try {
-    visitList = JSON.parse(fs.readFileSync("./visitList.json", "utf-8"));
+    visitList = JSON.parse(fs.readFileSync("./config/visitList.json", "utf-8"));
   } catch (e) {
     console.error(e.message);
     visitList = {};
     fs.writeFileSync(
-      "./visitList.json",
+      "./config/visitList.json",
       JSON.stringify(visitList, null, 2),
       "utf-8"
     );
@@ -50,7 +50,7 @@ function loadIPDefense() {
 
 function saveVisitList() {
   fs.writeFileSync(
-    "./visitList.json",
+    "./config/visitList.json",
     JSON.stringify(visitList, null, 2),
     "utf-8"
   );
@@ -139,7 +139,7 @@ router.post("/", async (ctx, next) => {
       2
     );
   } finally {
-    fs.writeFileSync("./config.json", JSON.stringify(flavor, null, 2), "utf-8");
+    fs.writeFileSync("./config/config.json", JSON.stringify(flavor, null, 2), "utf-8");
   }
 });
 
